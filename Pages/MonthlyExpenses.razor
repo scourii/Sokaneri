@@ -1,0 +1,47 @@
+﻿@page "/monthlyexpenses"
+
+@using Sakuri.Data
+@inject MoneyInformationService MoneyService
+
+<h1>Monthly Expenses</h1>
+
+<p>Expenses for this month:</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.Summary</td>
+                    <td>$@forecast.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+@code {
+    private MoneyInformation[] forecasts;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        forecasts = await MoneyService.GetMoneyAsync(DateTime.Now);
+    }
+}

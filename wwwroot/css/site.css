@@ -5,17 +5,28 @@ html, body {
 }
 
 a, .btn-link {
-    color: #0366d6;
+    color: #d7827e;
+}
+
+a:hover, .btn-link:hover {
+    color: #d7827e;
+    border-bottom: 2px solid #b4637a;
+    text-decoration: none;
+}
+
+h1 {
+    color: #575279;
 }
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: #d7827e;
+    border-color: #d7827e;
 }
 
 .content {
     padding-top: 1.1rem;
+    color:#575279;
 }
 
 .valid.modified:not([type=checkbox]) {

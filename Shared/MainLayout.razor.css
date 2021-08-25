@@ -6,17 +6,17 @@
 
 .main {
     flex: 1;
-    background-color: #817c9c;
+    background-color: #faf4ed;
 }
 
 .sidebar {
-    background-color: #555169;
-    border-right: 2px solid #2a283d;
+    background-color: #faf4ed;
+    border-right: 2px solid #f2e9de;
 }
 
 .top-row {
-    background-color: #555169;
-    border-bottom: 2px solid #2a283d;
+    background-color: #faf4ed;
+    border-bottom: 2px solid #f2e9de;
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;

@@ -1,11 +1,14 @@
-﻿@page "/monthlyexpenses"
+@page "/monthlyexpenses"
 
 @using Sakuri.Data
 @inject MoneyInformationService MoneyService
-
-<h1>Monthly Expenses</h1>
+<div class="top-row pl-0 navbar navbar-dark">
+    <h1>Monthly Expenses</h1>
+    <button class="btn button-add aria-hidden="true" style="float:right; margin-bottom:10px" >Add product</button>
+</div>
 
 <p>Expenses for this month:</p>
+
 
 @if (forecasts == null)
 {
@@ -30,18 +33,23 @@ else
                     <td>$@forecast.Price</td>
                 </tr>
             }
+            @foreach (var price in forecasts)
+            {
+                totalCost = totalCost + @price.Price;
+            }
+            <a class = "price" style="position:relative; left:170%; top: 35px;">Total Cost: <b>$@totalCost</b></a>
+            
         </tbody>
     </table>
-
 }
 
 @code {
     private MoneyInformation[] forecasts;
+    int totalCost;
 
 
     protected override async Task OnInitializedAsync()
     {
-        
         forecasts = await MoneyService.GetMoneyAsync(DateTime.Now);
     }
 }

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sakuri.Data;
+using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace Sakuri
 {
@@ -27,7 +29,8 @@ namespace Sakuri
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<MoneyInformationService>();
+            services.AddDbContext<SakuriContext>(options => options.UseNpgsql(Configuration.GetConnectionString("SakuriContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

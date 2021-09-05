@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Sakuri.Data;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using Npgsql;
 
 namespace Sakuri
 {
@@ -30,6 +31,13 @@ namespace Sakuri
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<MoneyInformationService>();
+
+            var connectionString = Configuration["PostgreSql:ConnectionString"];
+            var dbPassword = Configuration["PostgreSql:DbPassword"];
+            var builder = new NpgsqlConnectionStringBuilder(connectionString)
+            {
+                Password = dbPassword
+            };
             services.AddDbContext<SakuriContext>(options => options.UseNpgsql(Configuration.GetConnectionString("SakuriContext")));
         }
 

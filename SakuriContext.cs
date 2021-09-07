@@ -5,6 +5,8 @@ namespace Sakuri
 {
     public class SakuriContext : DbContext
     {
+        public SakuriContext(DbContextOptions<SakuriContext> options) : base(options)
+        { }
         public DbSet<MonthlyExpenses> MonthlyExpenses { get; set; }
         public DbSet<YearlyExpenses> YearlyExpenses { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseNpgsql("Blank");
@@ -23,4 +25,5 @@ namespace Sakuri
         public string Time { get; set; }
         public string ItemCategory { get; set; }
     }
+    
 }

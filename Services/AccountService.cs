@@ -2,15 +2,17 @@ using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sakuri.Models;
+
+
 namespace Sakuri.Services
 {
-    public interface AccountService
+    public interface IAccountService
     {
         User User { get; }
         Task Initialize();
         Task Login(Login model);
         Task Logout();
-        Task Register();
+        Task Register(AddUser model);
         Task<IList<User>> GetAllUsers();
         Task<User> GetById(string id);
         Task UpdateUser(string id, EditUser model);
@@ -28,7 +30,7 @@ namespace Sakuri.Services
         {
             _httpService = httpService;
             _navigationManager = navigationManager;
-            _localStorage = localStorageService;
+            _localStorageService = localStorageService;
         }
         public async Task Initialize()
         {
@@ -74,6 +76,7 @@ namespace Sakuri.Services
             if (id == User.Id)
                 await Logout();
         }
+        
 
 
     }

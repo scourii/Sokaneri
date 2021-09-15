@@ -8,9 +8,9 @@ namespace Sakuri.Services
     {
         Task<T> GetItem<T>(string key);
         Task SetItem<T>(string key, T value);
-        Task RemoveItem<T>(string key);
+        Task RemoveItem(string key);
     }
-    public class LocalStorageService
+    public class LocalStorageService : ILocalStorageService
     {
         private IJSRuntime _runtime;
 

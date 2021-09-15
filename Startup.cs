@@ -1,63 +1,143 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Sakuri.Data;
-using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using Npgsql;
+using Sakuri.Helpers;
+using Sakuri.Models;
 
-namespace Sakuri
+namespace Sakuri.Services
 {
-    public class Startup
+    public interface IHttpService
     {
-        public Startup(IConfiguration configuration)
+        Task<T> Get<T>(string uri);
+        Task Post(string uri, object value);
+        Task<T> Post<T>(string uri, object value);
+        Task Put(string uri, object value);
+        Task<T> Put<T>(string uri, object value);
+        Task Delete(string uri);
+        Task<T> Delete<T>(string uri);
+    }
+    public class HttpService : IHttpService
+    {
+        private HttpClient _httpClient;
+        private NavigationManager _navigationManager;
+        private ILocalStorageService _localStorageService;
+        private IConfiguration _configuration;
+        public HttpService(HttpClient client, NavigationManager navigationManager, ILocalStorageService localStorageService, IConfiguration configuration)
         {
-            Configuration = configuration;
+            _httpClient = client;
+            _navigationManager = navigationManager;
+            _localStorageService = localStorageService;
+            _configuration = configuration;
+        }
+        public async Task<T> Get<T>(string uri)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            return await sendRequest<T>(request);
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
+        public async Task Post(string uri, object value)
         {
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
-            services.AddSingleton<MoneyInformationService>();
-            services.AddDbContext<SakuriContext>(options =>
-            {
-                options.UseNpgsql(Configuration.GetConnectionString("SakuriDatabase"));
-            });
+            var request = createRequest(HttpMethod.Post, uri, value);
+            await sendRequest(request);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async Task<T> Post<T>(string uri, object value)
         {
-            if (env.IsDevelopment())
+            var request = createRequest(HttpMethod.Post, uri, value);
+            return await sendRequest<T>(request);
+        }
+
+        public async Task Put(string uri, object value)
+        {
+            var request = createRequest(HttpMethod.Put, uri, value);
+            await sendRequest(request);
+        }
+
+        public async Task<T> Put<T>(string uri, object value)
+        {
+            var request = createRequest(HttpMethod.Put, uri, value);
+            return await sendRequest<T>(request);
+        }
+
+        public async Task Delete(string uri)
+        {
+            var request = createRequest(HttpMethod.Delete, uri);
+            await sendRequest(request);
+        }
+
+        public async Task<T> Delete<T>(string uri)
+        {
+            var request = createRequest(HttpMethod.Delete, uri);
+            return await sendRequest<T>(request);
+        }
+        private HttpRequestMessage createRequest(HttpMethod method, string uri, object value = null)
+        {
+            var request = new HttpRequestMessage(method, uri);
+            if (value != null)
+                request.Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
+            return request;
+        }
+
+        private async Task sendRequest(HttpRequestMessage request)
+        {
+            await addJwtHeader(request);
+
+            // send request
+            using var response = await _httpClient.SendAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                app.UseDeveloperExceptionPage();
+                _navigationManager.NavigateTo("account/logout");
+                return;
             }
-            else
+
+            await handleErrors(response);
+        }
+
+        private async Task<T> sendRequest<T>(HttpRequestMessage request)
+        {
+            await addJwtHeader(request);
+            
+            // send request
+            using var response = await _httpClient.SendAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                app.UseExceptionHandler("/Error");
+                _navigationManager.NavigateTo("account/logout");
+                return default;
             }
 
-            app.UseStaticFiles();
+            await handleErrors(response);
 
-            app.UseRouting();
+            var options = new JsonSerializerOptions();
+            options.PropertyNameCaseInsensitive = true;
+            options.Converters.Add(new StringConverter());
+            return await response.Content.ReadFromJsonAsync<T>(options);
+        }
 
-            app.UseEndpoints(endpoints =>
+        private async Task addJwtHeader(HttpRequestMessage request)
+        {
+            var user = await _localStorageService.GetItem<User>("user");
+            var isApiUrl = !request.RequestUri.IsAbsoluteUri;
+            if (user != null && isApiUrl)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+        }
+
+        private async Task handleErrors(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
             {
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
-            });
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                throw new Exception(error["message"]);
+            }
         }
     }
 }

@@ -4,8 +4,30 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-a, .btn-link {
+a, h4, .btn-link {
     color: #d7827e;
+}
+.card
+{
+    border: 1px solid e4dfde;
+}
+label
+{
+    color:#b4637a;
+}
+.form-group {
+    color: #b4637a;
+}
+.card-header {
+    background-color: #f2e9de;
+}
+.card-body {
+    background-color: #faf4ed;
+}
+
+.form-group:InputText
+{
+    background-color: #f2e9de;
 }
 
 a:hover, .btn-link:hover {
@@ -23,7 +45,14 @@ h1 {
     background-color: #d7827e;
     border-color: #d7827e;
 }
-
+.button-add {
+    color: #fff;
+    font-size:larger;
+    padding: 7px;
+    background-color: #d7827e;
+    border-color: #d7827e;
+    outline: 2px solid #d7827e;
+}
 .content {
     padding-top: 1.1rem;
     color:#575279;

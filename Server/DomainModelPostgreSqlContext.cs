@@ -1,24 +1,43 @@
 using Sakuri.Models;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Sakuri.Server
 {
-    public class DomainModelPostgreSqlContext
+    public class DataAccessPostgreSqlProvider
     {
-        public DomainModelPostgreSqlContext(DbContextOptions<DomainModelPostgreSqlContext> options) : base(options)
-        {
+        private readonly ILogger _logger;
+        private readonly DomainModelPostgreSqlContext _context;
 
-        }
-        public DbSet<User> user { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder builder)
+        public DataAccessPostgreSqlProvider(ILoggerFactory loggerFactory,  DomainModelPostgreSqlContext context)
         {
-            base.OnModelCreating(builder);
+            _context = context;
+            _logger = loggerFactory.CreateLogger("DataAccessPostgreSqlProvider");
         }
-        public override int SaveChanges()
+        public void AddUser(User user)
         {
-            ChangeReturn.DetectChanges();
-            return base.SaveChanges();
+            _context.users.Add(user);
+            _context.SaveChanges();
+        }
+        public void UpdateUser(User user)
+        {
+            _context.users.Update(user);
+            _context.SaveChanges();
+        }
+        public void DeleteUser(string id)
+        {
+            var entity = _context.users.First(t => t.Id == id);
+            _context.users.Remove(entity);
+            _context.SaveChanges();
+        }
+        public User GetUserRecord(string id)
+        {
+            return _context.users.First(t => t.Id == id);
+        }
+        public List<User> GetAllUsers()
+        {
+            return _context.users.ToList();
         }
     }
 }

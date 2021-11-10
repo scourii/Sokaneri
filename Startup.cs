@@ -12,6 +12,7 @@ using Sakuri.Data;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Npgsql;
+using Blazored.Modal;
 using Sakuri.Services;
 
 namespace Sakuri
@@ -32,9 +33,7 @@ namespace Sakuri
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<IAccountService, AccountService>();
-            
-            
-
+            services.AddBlazoredModal();
             services.AddSingleton<MoneyInformationService>();
             services.AddHttpClient<IHttpService, HttpService>();
             services.AddScoped<ILocalStorageService, LocalStorageService>();

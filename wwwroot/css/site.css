@@ -9,89 +9,6 @@ a, h4, .btn-link {
 }
 .card
 {
-    border: 1px solid e4dfde;
-}
-label
-{
-    color:#b4637a;
-}
-.form-group {
-    color: #b4637a;
-}
-.card-header {
-    background-color: #f2e9de;
-}
-.card-body {
-    background-color: #faf4ed;
-}
-
-.form-group:InputText
-{
-    background-color: #f2e9de;
-}
-
-a:hover, .btn-link:hover {
-    color: #d7827e;
-    border-bottom: 2px solid #b4637a;
-    text-decoration: none;
-}
-
-h1 {
-    color: #575279;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #d7827e;
-    border-color: #d7827e;
-}
-.button-add {
-    color: #fff;
-    font-size:larger;
-    padding: 7px;
-    background-color: #d7827e;
-    border-color: #d7827e;
-    outline: 2px solid #d7827e;
-}
-.content {
-    padding-top: 1.1rem;
-    color:#575279;
-}
-
-.valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
-}
-
-.invalid {
-    outline: 1px solid red;
-}
-
-.validation-message {
-    color: red;
-}
-
-#blazor-error-ui {
-    background: lightyellow;
-    bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-    display: none;
-    left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
-    position: fixed;
-    width: 100%;
-    z-index: 1000;
-}
-@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
-
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
-a, h4, .btn-link {
-    color: #d7827e;
-}
-.card
-{
     border: 10px solid e4dfde;
     left: 50%;
     
@@ -105,7 +22,7 @@ label
 }
 .btn-primary:hover
 {
-    background-color:   #b4637a;
+    background-color: 	#b4637a;
     border-color: #6e6a86;
 }
 .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle
@@ -184,15 +101,6 @@ h1 {
     width: 100%;
     z-index: 1000;
 }
-
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
-
-
 
     #blazor-error-ui .dismiss {
         cursor: pointer;

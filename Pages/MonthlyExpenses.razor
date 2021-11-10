@@ -1,10 +1,10 @@
 @page "/monthlyexpenses"
-
+@inject IModalService modal  
 @using Sakuri.Data
 @inject MoneyInformationService MoneyService
 <div class="top-row pl-0 navbar navbar-dark">
     <h1>Monthly Expenses</h1>
-    <button class="btn button-add aria-hidden="true" style="float:right; margin-bottom:10px" >Add product</button>
+    <button @onclick="@ShowModal" class="btn-primary btn button-add" style="float:right; margin-bottom:10px">Add product</button>
 </div>
 
 <p>Expenses for this month:</p>
@@ -44,10 +44,19 @@ else
 }
 
 @code {
+    [CascadingParameter] public IModalService Modal { get; set; }
     private MoneyInformation[] forecasts;
     int totalCost;
+    void ShowModal()
+    {
+        var options = new ModalOptions()
+        {
+            HideCloseButton = true,
+            Animation = ModalAnimation.FadeInOut(.25)
+        };
 
-
+        Modal.Show<AddProduct>("Products", options);
+    }
     protected override async Task OnInitializedAsync()
     {
         forecasts = await MoneyService.GetMoneyAsync(DateTime.Now);

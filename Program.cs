@@ -22,5 +22,6 @@ namespace Sakuri
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+                
     }
 }

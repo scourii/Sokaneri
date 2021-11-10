@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/home/scouri/Programming/Csharp/Sakuri/Sakuri.csproj": {}
+    "/home/scouri/Programming/C#/Sakuri/Sakuri.csproj": {}
   },
   "projects": {
-    "/home/scouri/Programming/Csharp/Sakuri/Sakuri.csproj": {
+    "/home/scouri/Programming/C#/Sakuri/Sakuri.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/scouri/Programming/Csharp/Sakuri/Sakuri.csproj",
+        "projectUniqueName": "/home/scouri/Programming/C#/Sakuri/Sakuri.csproj",
         "projectName": "Sakuri",
-        "projectPath": "/home/scouri/Programming/Csharp/Sakuri/Sakuri.csproj",
+        "projectPath": "/home/scouri/Programming/C#/Sakuri/Sakuri.csproj",
         "packagesPath": "/home/scouri/.nuget/packages/",
-        "outputPath": "/home/scouri/Programming/Csharp/Sakuri/obj/",
+        "outputPath": "/home/scouri/Programming/C#/Sakuri/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/scouri/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net5.0"
+          "netcoreapp5.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
-            "targetAlias": "net5.0",
+            "targetAlias": "netcoreapp5.0",
             "projectReferences": {}
           }
         },
@@ -36,7 +36,25 @@
       },
       "frameworks": {
         "net5.0": {
-          "targetAlias": "net5.0",
+          "targetAlias": "netcoreapp5.0",
+          "dependencies": {
+            "Blazored.Modal": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[6.4.4, )"
+            },
+            "Microsoft.AspNetCore.Components.WebAssembly": {
+              "target": "Package",
+              "version": "[3.2.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -55,7 +73,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.400/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.403/RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,8 +10,14 @@ using Sakuri.Data;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Npgsql;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Serialization;
 using Blazored.Modal;
 using Sakuri.Services;
+using System.Net.Http;
+using System;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace Sakuri
 {
@@ -32,20 +36,34 @@ namespace Sakuri
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<IAccountService, AccountService>();
             services.AddBlazoredModal();
+            services.AddAuthenticationCore();
+            services.AddOidcAuthentication(options =>
+            {
+                options.ProviderOptions.DefaultScopes.Add("{SCOPE URI}");
+                Configuration.Bind("Local", options.ProviderOptions);
+            });
+            services.AddTransient<AccountService>();
             services.AddSingleton<MoneyInformationService>();
-            services.AddHttpClient<IHttpService, HttpService>();
-            services.AddScoped<ILocalStorageService, LocalStorageService>();
             services.AddDbContext<SakuriContext>(options =>
             {
-                options.UseNpgsql(Configuration.GetConnectionString("SakuriDatabase"));
+                options.UseNpgsql(Configuration.GetConnectionString("SakuriDBConnection"));
             });
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+            services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+            .AddNewtonsoftJson(options=> options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            
+            services.AddControllers();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(options=> options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -1,12 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Sakuri.Models
 {
+    [Table("accounts",Schema = "public")]
+
     public class User
     {
-        public string Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string UserName { get; set; }
-        public string Token { get; set; }
-        public bool Delete { get; set; }
+        
+        [Key]
+        public long userid { get; set; }
+        public string password {get; set;}
+        
     }
 }

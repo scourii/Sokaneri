@@ -1,84 +1,64 @@
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sakuri.Models;
-
+using Sakuri.Data;
+using System.Linq;
+using System;
 
 namespace Sakuri.Services
 {
-    public interface IAccountService
+    public class AccountService 
     {
-        User User { get; }
-        Task Initialize();
-        Task Login(Login model);
-        Task Logout();
-        Task Register(AddUser model);
-        Task<IList<User>> GetAllUsers();
-        Task<User> GetById(string id);
-        Task UpdateUser(string id, EditUser model);
-        Task Delete(string id);
-    }
-    public class AccountService : IAccountService
-    {
-        public User User { get; private set; }
-        private IHttpService _httpService;
-        private NavigationManager _navigationManager;
-        private ILocalStorageService _localStorageService;
-        private string _userKey = "user";
+        protected SakuriContext _context;
+        public User User {get; private set;}
         
-        public AccountService(IHttpService httpService, NavigationManager navigationManager, ILocalStorageService localStorageService)
+        public AccountService(SakuriContext context)
         {
-            _httpService = httpService;
-            _navigationManager = navigationManager;
-            _localStorageService = localStorageService;
+            _context = context;
+
         }
-        public async Task Initialize()
+        public List<Users> GetAllUsers()
         {
-            User = await _localStorageService.GetItem<User>(_userKey);
+            return _context.Users.ToList();
         }
-        public async Task Login(Login model)
+        public bool InsertInfo(Users user)
         {
-            User = await _httpService.Post<User>("/users/authenticate", model);
-            await _localStorageService.SetItem(_userKey, User);
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return true;
         }
-        public async Task Logout()
+        public Users EditInfo(long UserId)
         {
-            User = null;
-            await _localStorageService.RemoveItem(_userKey);
-            _navigationManager.NavigateTo("account/login");
+            User user = new User();
+            return _context.Users.FirstOrDefault(u =>u.userid == UserId);
         }
-        public async Task Register(AddUser model)
+        public bool UpdateInfo(User user)
         {
-            await _httpService.Post("/users/register", model);
-        }
-        public async Task<IList<User>> GetAllUsers()
-        {
-            return await _httpService.Get<IList<User>>("/users");
-        }
-        public async Task<User> GetById(string id)
-        {
-            return await _httpService.Get<User>($"/users/{id}");
-        }
-        public async Task UpdateUser(string id, EditUser model)
-        {
-            await _httpService.Put("/users/{id}", model);
-            if(id == User.Id)
+            var userUpdate = _context.Users.FirstOrDefault(u=>u.userid == user.userid);
+            if (userUpdate != null)
             {
-                User.FirstName = model.FirstName;
-                User.LastName = model.LastName;
-                User.UserName = model.UserName;
-                await _localStorageService.SetItem(_userKey, User);
+                userUpdate.password = user.password;
+                _context.SaveChanges();
             }
+            else
+            {
+                return false;
+            }
+            return true;
         }
-        public async Task Delete(string id)
+        public bool DeleteInfo(User userDelete)
         {
-            await _httpService.Delete($"/users/{id}");
-            if (id == User.Id)
-                await Logout();
-        }
-        
-
-
+            var deleteUser = _context.Users.FirstOrDefault(u=>u.userid == userDelete.userid);
+            if (deleteUser != null)
+            {
+                _context.Remove(deleteUser);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }   
     }
-
 }

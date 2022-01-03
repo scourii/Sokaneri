@@ -6,23 +6,21 @@
 
 .main {
     flex: 1;
-    background-color: #faf4ed;
+    background-color: var(--background-1);
 }
 
 .sidebar {
-    background-color: #faf4ed;
-    border-right: 2px solid #f2e9de;
+    background-color: var(--background-1);
+    border-right: 2px solid var(--background-2);
 }
-
 .top-row {
-    background-color: #faf4ed;
-    border-bottom: 2px solid #f2e9de;
+    background-color: var(--background-1);
+    border-bottom: 2px solid var(--background-2);
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
     align-items: center;
 }
-
     .top-row ::deep a, .top-row .btn-link {
         white-space: nowrap;
         margin-left: 1.5rem;

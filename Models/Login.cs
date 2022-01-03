@@ -5,8 +5,8 @@ namespace Sakuri.Models
     public class Login
     {
         [Required]
-        public string UserName { get; set; }
+        public long userid { get; set; }
         [Required]
-        public string Password { get; set; }
+        public string password { get; set; }
     }
 }

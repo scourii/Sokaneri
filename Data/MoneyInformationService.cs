@@ -16,7 +16,7 @@ namespace Sakuri.Data
             var rng = new Random();
             return Task.FromResult(Enumerable.Range(1, 5).Select(index => new MoneyInformation
             {
-                Date = startDate.AddDays(index),
+                Date = startDate.AddDays(-index),
                 Price = rng.Next(0, 400),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             }).ToArray());

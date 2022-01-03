@@ -9,8 +9,8 @@ namespace Sakuri.Server
     {
         void AddUser(User user);
         void UpdateUser(User user);
-        void DeleteUser(string id);
-        User GetUserRecord(string id);
+        void DeleteUser(int id);
+        User GetUserRecord(int id);
         List<User> GetAllUsers();
     }
 }

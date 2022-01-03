@@ -1,15 +1,51 @@
 @page "/monthlyexpenses"
 @inject IModalService modal  
+@inject HttpClient Http
 @using Sakuri.Data
+@using Sakuri.Services
 @inject MoneyInformationService MoneyService
+@inherits OwningComponentBase<AccountService>
+
+
 <div class="top-row pl-0 navbar navbar-dark">
     <h1>Monthly Expenses</h1>
-    <button @onclick="@ShowModal" class="btn-primary btn button-add" style="float:right; margin-bottom:10px">Add product</button>
+     <div class="dropdown" style="margin-left:55%;margin-bottom:10px">  
+      <button class="btn-primary btn button-add" data-toggle="dropdown"> Filter</button>
+      <div class="dropdown-menu">
+          <a class="dropdown-item">Category</a>
+          <a class="dropdown-item">Price</a>
+          <a class="dropdown-item">Date</a>
+      </div>
+ </div>
+    <button @onclick="@ShowModal" class="btn-primary btn button-add" style="margin-bottom:10px">Add product</button>
 </div>
 
-<p>Expenses for this month:</p>
-
-
+<p><b>Expenses for this month:</b></p>
+<table class='table'>  
+        <thead>  
+            <tr>  
+                <th>Name</th>  
+                <th>Password</th>
+            </tr>  
+        </thead>  
+        <tbody>  
+            @foreach (var user in userList)  
+            {  
+                <tr>  
+                    <td>@user.userid</td>
+                    <td>@user.password</td>  
+                </tr>  
+            }  
+        </tbody>  
+    </table>  
+@functions
+{
+    Users[] usersList;
+    protected async Task OnInitAsync()
+    {
+        usersList = await Http.GetFromJsonAsync<Users[]>("/api/Users/Get");
+    }
+}
 @if (forecasts == null)
 {
     <p><em>Loading...</em></p>
@@ -33,11 +69,8 @@ else
                     <td>$@forecast.Price</td>
                 </tr>
             }
-            @foreach (var price in forecasts)
-            {
-                totalCost = totalCost + @price.Price;
-            }
-            <a class = "price" style="position:relative; left:170%; top: 35px;">Total Cost: <b>$@totalCost</b></a>
+            
+            <a class = "price" style="position:relative; left:168%; top: 35px;">Total Cost: <b>$@totalCost</b></a>
             
         </tbody>
     </table>
@@ -46,6 +79,8 @@ else
 @code {
     [CascadingParameter] public IModalService Modal { get; set; }
     private MoneyInformation[] forecasts;
+    IList<Users> userList;
+    Users usrobj = new Users();
     int totalCost;
     void ShowModal()
     {
@@ -60,5 +95,17 @@ else
     protected override async Task OnInitializedAsync()
     {
         forecasts = await MoneyService.GetMoneyAsync(DateTime.Now);
+        userList = Service.GetAllUsers();
+        foreach (var price in forecasts)
+        {
+            totalCost = totalCost + @price.Price;
+        }
     }
+    void InsertInfo()
+    {
+        usrobj.userid = 0;
+        Service.InsertInfo(usrobj);
+    }
+    
+
 }

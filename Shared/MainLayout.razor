@@ -1,12 +1,17 @@
 @inherits LayoutComponentBase
 
-<div class="page">
+<div class="page @GetCssClass()">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <div class="main">
         <div class="top-row px-4">
+            <LoginDisplay />
+            <svg width="45px" height="80%" transform="scale(.6)" style="fill:var(--rose)"xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 41c10.4934.0 19-8.5066 19-19C41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"></path>
+                <rect style="opacity:0" x="5" y="5" width="40" height="40" @onclick="ChangeTheme" />
+            </svg>
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -15,3 +20,30 @@
         </div>
     </div>
 </div>
+
+@code {
+    private string selectedTheme = "Light";
+    
+    private string GetCssClass()
+    {
+        if (selectedTheme == "Light")
+        {
+            return String.Empty;
+        }
+        else
+        {
+            return "dark-mode";
+        }
+    }
+    void ChangeTheme()
+    {
+        if (selectedTheme == "Light")
+        {
+            selectedTheme = "dark-mode";
+        }
+        else
+        {
+            selectedTheme = "Light";
+        }
+    }
+}

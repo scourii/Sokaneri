@@ -3,91 +3,167 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
+:root {
+    /* light theme*/
+    --background-0: #fffaf3;
+    --background-1: #faf4ed;
+    --background-2: #f2e9de;
+    --button-text: #fff;
+    --rose: #d7827e;
+    --love: #b4637a;
+    --subtle: #6e6a86;
+    --gold: #ea9d34;
+    --inactive: #9893a5;
+    --text: #575279;
+    --error: #eb6f92;
+    --navbar-bg: #e4dfde;
+    --navbar-hover: #eee9e6;
+    --border: #e4dfde;
+    --name-bg: #f2e9de;
+}
+.dark-mode {
+    --background-0: var(--background-1);
+    --background-1: #3a3a3a;
+    --background-2: #2a2a2a;
+    --button-text: #bebebe;
+    --rose: #937f74;
+    --love: #aa8f7c;
+    --subtle: #bebebe;
+    --gold: #987a6b;
+    --inactive: #8b8f7e;
+    --text: #bebebe;
+    --error: #eb6f92;
+    --navbar-bg: #987a6b;
+    --navbar-hover: #877979;
+    --border: var(--inactive);
+    --name-bg: #2a2a2a;
+}
 
 a, h4, .btn-link {
-    color: #d7827e;
+    color: var(--rose);
 }
-.card
+.table
 {
-    border: 10px solid e4dfde;
-    left: 50%;
-    
-    align-self: center;
-    align-content: center;
-    transform: translate(-50%, +50%) 
+    color:var(--text);
 }
-label
+.table thead th
 {
-    color:#b4637a;
+    border-bottom: 1px solid var(--background-2);
 }
+.table td, .table th
+{
+    border-top: 1px solid var(--background-2);
+}
+.form-control
+{
+    border-color:var(--border);
+}
+label {
+    color:var(--love);
+}
+
 .btn-primary:hover
 {
-    background-color: 	#b4637a;
-    border-color: #6e6a86;
+    background-color: var(--love);
+    border-color: var(--subtle);
 }
 .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle
 {
-    background-color: #ea9d34;
-}
-.form-group {
-    color: #b4637a;
-}
-.card-header {
-    background-color: #f2e9de;
-}
-.card-body {
-    background-color: #faf4ed;
+    background-color: var(--gold);
 }
 
+.form-group {
+    color: var(--love);
+    
+}
+.card {
+    border: 1.5px solid var(--border);
+    left: 50%;
+    align-self: center;
+    align-content: center;
+    transform: translate(-50%, +50%);
+    box-shadow: 6px 6px var(--rose);
+}
+.card-header {
+    background-color: var(--background-2);
+}
+.card-body {
+    border-color: black;
+    background-color: var(--background-1);
+    
+}
 .form-group:InputText
 {
-    background-color: #fffaf3;
+    background-color: var(--background-0);
 }
 .form-control:valid
 {
-    background-color: #f2e9de;
-    color: #575279;
+    background-color: var(--background-2);
+    color: var(--text);
 }
 
 a:hover, .btn-link:hover {
-    color: #d7827e;
-    border-bottom: 2px solid #b4637a;
+    color: var(--rose);
+    border-bottom: 2px solid var(--love);
     text-decoration: none;
 }
 
 h1 {
-    color: #575279;
+    color: var(--text);
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: #d7827e;
-    border-color: #d7827e;
+    color: var(--button-text);
+    background-color: var(--rose);
+    border-color: var(--rose);
 }
 .button-add {
-    color: #fff;
-    font-size:larger;
+    color: var(--button-text);
+    font-size: larger;
     padding: 7px;
-    background-color: #d7827e;
-    border-color: #d7827e;
-    outline: 2px solid #d7827e;
+    background-color: var(--rose);
+    border-color: var(--rose);
+    outline: 2px solid var(--rose);
+}
+.dropdown-menu
+{
+    background-color: var(--background-0);
+    color: var(--rose);
+    box-shadow: 6px 6px 2px;
+}
+.dropdown-item:hover
+{
+    background-color: var(--background-2);
+    border-bottom: none;
 }
 .content {
     padding-top: 1.1rem;
-    color:#575279;
+    color:var(--text);
 }
 
+.blazored-modal
+{
+    background-color: var(--background-1);
+    color: var(--rose);
+    width: 30rem;
+    box-shadow: 6px 6px 2px;
+}
+.btn-secondary
+{
+    background-color: var(--inactive);
+    border-color:var(--inactive);
+}
 .navbar-dark .navbar-brand:focus, .navbar-dark .navbar-brand:hover
 {
-    color:#d7827e;
+    color:var(--rose);
 }
 
 .invalid {
-    outline: 1px solid red;
+    outline: 1px solid var(--error);
 }
 
 .validation-message {
-    color: red;
+    color: var(--error);
 }
 
 #blazor-error-ui {

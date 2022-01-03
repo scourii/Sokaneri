@@ -13,7 +13,7 @@ namespace Sakuri.Helpers
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        public IAccountService AccountService { get; set; }
+        public AccountService AccountService { get; set; }
         
         protected override void Render(RenderTreeBuilder renderTreeBuilder)
         {
@@ -30,3 +30,4 @@ namespace Sakuri.Helpers
         }
     }
 }
+

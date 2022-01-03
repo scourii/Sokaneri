@@ -1,0 +1,41 @@
+@page "/AddProduct"
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+<div class="simple-form">
+
+    <div class="form-group">
+        <label for="movie-name">Item Name</label>
+        <input  type="text" class="form-control" id="movie-name" />
+    </div>
+
+    <div class="form-group">
+        <label for="year">Item Price</label>
+        <input  type="text" class="form-control" id="year" />
+    </div>
+
+    <div class="form-group">
+        <label for="category">Category</label>
+        <input type="text" class="form-control" id="category" />
+    </div>
+
+    <div class="form-group">
+        <label for="date">Date</label>
+        <input type="number" class="form-control" id="category" />
+    </div>
+
+    <button  @onclick="ModalInstance.CancelAsync" class="btn btn-primary">Submit</button>
+    <button @onclick="ModalInstance.CancelAsync" class="btn btn-secondary">Cancel</button>
+</div>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    void ShowModal()
+    {
+        var options = new ModalOptions()
+        {
+            HideCloseButton = true
+        };
+    }
+}

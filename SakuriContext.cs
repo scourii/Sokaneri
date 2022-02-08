@@ -11,29 +11,20 @@ namespace Sakuri
         { }
         
         public DbSet<Users> Users { get; set;}
-        public DbSet<MonthlyExpenses> MonthlyExpenses { get; set; }
-        public DbSet<YearlyExpenses> YearlyExpenses { get; set; }
+        
+        public DbSet<Items> Items { get; set; }
     
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql("Server=127.0.0.1;Port=5432;Database=sakuridb;User Id=scouri;Password=K3qingWaifu");
     
     }
-    public class MonthlyExpenses
+    [Table("items", Schema = "public")]
+    public class Items
     {
         [Key]
-        public int Id { get; set; }
         public string ItemName { get; set; }
         public int ItemPrice { get; set; }
-        public string Time { get; set; }
-        public string ItemCategory { get; set; }
-    }
-    public class YearlyExpenses
-    {
-        [Key]
-        public int Id {get; set;}
-        public string ItemName { get; set; }
-        public int ItemPrice { get; set; }
-        public string Time { get; set; }
+        public DateOnly Time { get; set; }
         public string ItemCategory { get; set; }
     }
     [Table("users", Schema = "public")]
@@ -45,3 +36,5 @@ namespace Sakuri
     }
     
 }
+
+

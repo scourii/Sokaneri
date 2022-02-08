@@ -3,31 +3,39 @@
 @inject NavigationManager NavigationManager
 
 <div class="simple-form">
+    <EditForm Model="@model" OnValidSubmit=@AddItem>
     <div class="form-group">
         <label for="item-name">Item Name</label>
-        <input  type="text" class="form-control" id="item-name" />
+        <InputText @bind-Value="model.itemname" type="text" class="form-control" />
+        <ValidationMessage For="@(() => model.itemname)" />
     </div>
 
     <div class="form-group">
-        <label for="year">Item Price</label>
-        <input  type="text" class="form-control" id="year" />
+        <label for="price">Item Price</label>      
+        <InputNumber @bind-Value="model.itemprice" type="int" class="form-control" />
+        <ValidationMessage For="@(() => model.itemprice)" />
     </div>
 
     <div class="form-group">
         <label for="category">Category</label>
-        <input type="text" class="form-control" id="category" />
+        <InputText @bind-Value="model.itemcategory" type="text" class="form-control" />
+        <ValidationMessage For="@(() => model.itemcategory)" />
     </div>
 
     <div class="form-group">
         <label for="date">Date</label>
-        <input type="date" class="form-control" id="category" />
+        <InputDate @bind-Value="model.itemdate" class="form-control" />
+        
     </div>
 
     <button  @onclick="ModalInstance.CancelAsync" class="btn btn-primary">Submit</button>
     <button @onclick="ModalInstance.CancelAsync" class="btn btn-secondary">Cancel</button>
+    </EditForm>
 </div>
 
 @code {
+    Items item = new Items();
+    private AddItem model = new AddItem();
 
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     void ShowModal()
@@ -36,5 +44,13 @@
         {
             HideCloseButton = true
         };
+    }
+    void AddItem()
+    {
+        item.ItemName = model.itemname; 
+        item.ItemPrice = model.itemprice;
+        item.ItemCategory = model.itemcategory;
+        item.Time = model.itemdate;
+        Service.AddItem(item);
     }
 }

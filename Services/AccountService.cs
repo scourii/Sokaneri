@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sakuri.Data;
+using Sakuri.Models;
 using System.Linq;
 using System;
 
@@ -10,13 +11,13 @@ namespace Sakuri.Services
     public class AccountService 
     {
         protected SakuriContext _context;
-        public User User {get; private set;}
+        public Data.User User {get; private set;}
         
         public AccountService(SakuriContext context)
         {
             _context = context;
-
         }
+
         public List<Users> GetAllUsers()
         {
             return _context.Users.ToList();
@@ -27,12 +28,14 @@ namespace Sakuri.Services
             _context.SaveChanges();
             return true;
         }
-        public Users EditInfo(long UserId)
+        public bool AddItem(Items item)
         {
-            User user = new User();
-            return _context.Users.FirstOrDefault(u =>u.userid == UserId);
+            _context.Items.Add(item);
+            _context.SaveChanges();
+            return true;
         }
-        public bool UpdateInfo(User user)
+        
+        public bool UpdateInfo(Data.User user)
         {
             var userUpdate = _context.Users.FirstOrDefault(u=>u.userid == user.userid);
             if (userUpdate != null)
@@ -46,7 +49,7 @@ namespace Sakuri.Services
             }
             return true;
         }
-        public bool DeleteInfo(User userDelete)
+        public bool DeleteInfo(Data.User userDelete)
         {
             var deleteUser = _context.Users.FirstOrDefault(u=>u.userid == userDelete.userid);
             if (deleteUser != null)
@@ -62,3 +65,5 @@ namespace Sakuri.Services
         }   
     }
 }
+
+

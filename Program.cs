@@ -4,14 +4,15 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
-using Sakuri._0.Areas.Identity;
-using Sakuri._0.Data;
+using Sakuri.Areas.Identity;
+using Sakuri.Data;
 using Sakuri;
 using Newtonsoft.Json.Serialization;
 using Blazored.Modal;
 using Blazored.Toast;
 using Sakuri.Services;
-using Sakuri.Data;
+
+using Sakuri.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,21 +22,22 @@ builder.Services.AddDbContext<SakuriContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("SakuriDBConnection"));
 });
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-
-builder.Services.AddTransient<AccountService>();
-builder.Services.AddSingleton<MoneyInformationService>();
-builder.Services.AddBlazoredModal();
 builder.Services.AddCors(c =>
 {
     c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
 .AddNewtonsoftJson(options=> options.SerializerSettings.ContractResolver = new DefaultContractResolver());
-builder.Services.AddBlazoredToast();
 builder.Services.AddControllers();
-
+builder.Services.AddBlazoredModal();
+builder.Services.AddBlazoredToast();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+builder.Services.AddTransient<AccountService>();
+builder.Services.AddSingleton<MoneyInformationService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,6 +48,7 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

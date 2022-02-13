@@ -1,6 +1,10 @@
 @page "/AddProduct"
+@using Sakuri.Services
+@using Sakuri.Models
+@using Sakuri
 @inherits OwningComponentBase<AccountService>
 @inject NavigationManager NavigationManager
+
 
 <div class="simple-form">
     <EditForm Model="@model" OnValidSubmit=@AddItem>

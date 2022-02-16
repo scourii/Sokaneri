@@ -11,9 +11,7 @@ using Newtonsoft.Json.Serialization;
 using Blazored.Modal;
 using Blazored.Toast;
 using Sakuri.Services;
-
-using Sakuri.Server;
-
+using Sakuri.Areas.Identity.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -22,6 +20,12 @@ builder.Services.AddDbContext<SakuriContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("SakuriDBConnection"));
 });
+builder.Services.AddDbContext<SakuriContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("SakuriDBConnection"));
+});
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 builder.Services.AddCors(c =>
 {
     c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
@@ -31,13 +35,15 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.
 builder.Services.AddControllers();
 builder.Services.AddBlazoredModal();
 builder.Services.AddBlazoredToast();
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddTransient<AccountService>();
 builder.Services.AddSingleton<MoneyInformationService>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+    options.User.RequireUniqueEmail = false;
+    options.SignIn.RequireConfirmedAccount = false;
+
+}).AddEntityFrameworkStores<SakuriContext>().AddDefaultTokenProviders().AddDefaultUI();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,0 +1,87 @@
+@page "/monthlyexpenses"
+@using Sakuri.Data
+@using Sakuri
+@using Sakuri.Services
+@inject IModalService modal  
+@inject MoneyInformationService MoneyService
+@inherits OwningComponentBase<AccountService>
+@inject NavigationManager NavigationManager
+
+
+<div class="top-row pl-0 navbar navbar-dark">
+    <h1>Monthly Expenses</h1>
+     <div class="dropdown" style="margin-left:55%;margin-bottom:10px">  
+      <button class="btn-primary btn button-add" data-toggle="dropdown"> Filter</button>
+      <div class="dropdown-menu">
+          <a class="dropdown-item">Category</a>
+          <a class="dropdown-item">Price</a>
+          <a class="dropdown-item">Date</a>
+      </div>
+ </div>
+    <button @onclick="@ShowModal" class="btn-primary btn button-add" style="margin-bottom:10px">Add product</button>
+</div>
+
+<p><b>Expenses for this month:</b></p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.Summary</td>
+                    <td>$@forecast.Price</td>
+                </tr>
+            }
+            
+            <a class = "price" style="position:relative; left:168%; top: 35px;">Total Cost: <b>$@totalCost</b></a>
+            
+        </tbody>
+    </table>
+}
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    private MoneyInformation[] forecasts;
+    IList<Users> userList;
+    Users usrobj = new Users();
+    int totalCost;
+    public void ShowModal()
+    {
+        var options = new ModalOptions()
+        {
+            HideCloseButton = true,
+            Animation = ModalAnimation.FadeInOut(.25)
+        };
+
+        Modal.Show<AddProduct>("Products", options);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await MoneyService.GetMoneyAsync(DateTime.Now);
+        userList = Service.GetAllUsers();
+        foreach (var price in forecasts)
+        {
+            totalCost = totalCost + @price.Price;
+        }
+    }
+    void InsertInfo()
+    {
+        usrobj.userid = 0;
+        Service.InsertInfo(usrobj);
+    }
+
+}

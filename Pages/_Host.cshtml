@@ -1,0 +1,12 @@
+﻿@page "/"
+@using Sakuri
+@namespace Sakuri.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "_Layout";
+}
+<head>
+    <base href="~/" />
+</head>
+<component type="typeof(App)" render-mode="ServerPrerendered" />

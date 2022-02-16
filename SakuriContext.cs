@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Sakuri.Areas.Identity.Data;
 namespace Sakuri
 {
-    public class SakuriContext : DbContext
+    public class SakuriContext : IdentityDbContext<ApplicationUser>
     {
         public SakuriContext(DbContextOptions<SakuriContext> options) : base(options)
         { }
@@ -15,7 +16,7 @@ namespace Sakuri
         public DbSet<Items> Items { get; set; }
     
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Server=127.0.0.1;Port=5432;Database=sakuridb;User Id=scouri;Password=K3qingWaifu");
+            => optionsBuilder.UseNpgsql("");
     
     }
     [Table("items", Schema = "public")]
@@ -32,7 +33,7 @@ namespace Sakuri
     {
         [Key]
         public long userid { get; set; }
-        public string password { get; set;}
+ 
     }
     
 }

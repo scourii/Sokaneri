@@ -2,16 +2,17 @@ using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sakuri.Data;
+using Sakuri;
 using Sakuri.Models;
 using System.Linq;
 using System;
-
+using Sakuri.Areas.Identity.Data;
 namespace Sakuri.Services
 {
     public class AccountService 
     {
         protected SakuriContext _context;
-        public Data.User User {get; private set;}
+        public ApplicationUser User {get; private set;}
         
         public AccountService(SakuriContext context)
         {
@@ -35,21 +36,7 @@ namespace Sakuri.Services
             return true;
         }
         
-        public bool UpdateInfo(Data.User user)
-        {
-            var userUpdate = _context.Users.FirstOrDefault(u=>u.userid == user.userid);
-            if (userUpdate != null)
-            {
-                userUpdate.password = user.password;
-                _context.SaveChanges();
-            }
-            else
-            {
-                return false;
-            }
-            return true;
-        }
-        public bool DeleteInfo(Data.User userDelete)
+        public bool DeleteInfo(ApplicationUser userDelete)
         {
             var deleteUser = _context.Users.FirstOrDefault(u=>u.userid == userDelete.userid);
             if (deleteUser != null)

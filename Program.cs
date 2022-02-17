@@ -12,6 +12,9 @@ using Blazored.Modal;
 using Blazored.Toast;
 using Sakuri.Services;
 using Sakuri.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -39,11 +42,14 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddTransient<AccountService>();
 builder.Services.AddSingleton<MoneyInformationService>();
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
     options.User.RequireUniqueEmail = false;
     options.SignIn.RequireConfirmedAccount = false;
 
 }).AddEntityFrameworkStores<SakuriContext>().AddDefaultTokenProviders().AddDefaultUI();
+
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -72,5 +78,3 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
-
-

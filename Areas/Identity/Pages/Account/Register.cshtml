@@ -1,10 +1,26 @@
-﻿@page
+@page
 @using Sakuri.Areas.Identity.Data
+@using Sakuri.Areas.Identity.Pages
+@using System.Security.Cryptography
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @model RegisterModel
+
 @{
     ViewData["Title"] = "Register";
+    long AccountID = GenerateAccountNumber();
+    long GenerateAccountNumber()
+    {
+        var bytes = new byte[sizeof(Int64)];
+        RNGCryptoServiceProvider Gen = new RNGCryptoServiceProvider();
+        Gen.GetBytes(bytes);
+
+        long random = BitConverter.ToInt64(bytes, 0);
+
+        //Remove any possible negative generator numbers and shorten the generated number to 12-digits
+        string pos = random.ToString().Replace('-', ' ').Substring(0, 12);
+        return AccountID = Convert.ToInt64(pos);
+    }    
 }
 
 <div class="card">
@@ -13,9 +29,17 @@
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <div class="form-group">
                 <label asp-for="Input.AccountID"></label>
-                <input asp-for="Input.AccountID" class="form-control" aria-required="true" />
+                <p><b>@AccountID</b>
+                <input asp-for="Input.AccountID" type="hidden" id="Input.AccountID" value=@AccountID />
                 <span asp-validation-for="Input.AccountID" class="text-danger"></span>
+                <button class="btn btn-primary" style="float:right;" onclick="@GenerateAccountNumber();">
+                    Refresh
+                </button>
+                </p>
+                
             </div>
+        
+        
             <div class="form-group">
                 <label asp-for="Input.Password"></label>
                 <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
@@ -26,9 +50,11 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
+            
             <button id="registerSubmit" type="submit" class="w-90 btn btn-lg btn-primary">Register</button>
         </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+

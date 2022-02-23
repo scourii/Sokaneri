@@ -2,7 +2,25 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: var(--background-1);
+    
 }
+.bg-white {
+    background-color: var(--background-2) !important;
+    color: var(--rose) !important;
+}
+a.navbar-brand, a.text-dark, a.text-dark:hover {
+    color: var(--rose) !important;
+}
+
+.border-top {
+    size: 100rem;
+    border-top: 1px dashed var(--border) !important;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+  }
 :root {
     /* light theme*/
     --background-0: #fffaf3;
@@ -39,9 +57,10 @@ html, body {
     --name-bg: #2a2a2a;
 }
 
-a, h4, .btn-link {
+a, h4, .btn-link, .navbar-nav  {
     color: var(--rose);
 }
+
 .table
 {
     color:var(--text);
@@ -184,3 +203,5 @@ h1 {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+

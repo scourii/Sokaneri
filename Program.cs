@@ -17,16 +17,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+builder.Services.AddRazorPages();
 // Add services to the container.
 builder.Services.AddDbContext<SakuriContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("SakuriDBConnection"));
 });
-builder.Services.AddDbContext<SakuriContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("SakuriDBConnection"));
-});
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddCors(c =>
@@ -38,18 +35,23 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.
 builder.Services.AddControllers();
 builder.Services.AddBlazoredModal();
 builder.Services.AddBlazoredToast();
-builder.Services.AddRazorPages();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddAuthentication("Identity.Application").AddCookie();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddTransient<AccountService>();
 builder.Services.AddSingleton<MoneyInformationService>();
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+
     options.User.RequireUniqueEmail = false;
     options.SignIn.RequireConfirmedAccount = false;
 
-}).AddEntityFrameworkStores<SakuriContext>().AddDefaultTokenProviders().AddDefaultUI();
-
+}).AddDefaultTokenProviders().AddEntityFrameworkStores<SakuriContext>().AddDefaultUI();
+/* builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+    options.SignIn.RequireConfirmedAccount = false )
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+*/ 
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -69,12 +71,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
+

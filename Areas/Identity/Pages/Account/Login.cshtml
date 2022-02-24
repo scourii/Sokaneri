@@ -1,31 +1,27 @@
 @page
 @model LoginModel
-
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Login";
 }
-
-<h1>@ViewData["Title"]</h1>
 <div class="card">
-    <h4 class="card-header">Register</h4>
+    <h4 class="card-header">Login</h4>
     <div class="card-body">
         <section>
             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                <h2>Use a local account to log in.</h2>
-                <hr />
                 
-                <div class="form-floating">
-                    <input asp-for="Input.AccountID" class="form-control" />
+                <div class="form-group">
                     <label asp-for="Input.AccountID" class="form-label"></label>
+                    <input asp-for="Input.AccountID" class="form-control" />
                     <span asp-validation-for="Input.AccountID" class="text-danger"></span>
                 </div>
-                <div class="form-floating">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+                <div class="form-group">
                     <label asp-for="Input.Password" class="form-label"></label>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+                    
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
-                <div>
-                    <input type="submit" id="login-submit" type="submit" value="Login" class="w-100 btn btn-lg btn-primary" />
+                <div class="form-group">
+                    <input type="submit" id="loginSubmit" type="submit" value="Login" class="w-100 btn btn-lg btn-primary" />
                 </div>
                 <div>
                     <p>

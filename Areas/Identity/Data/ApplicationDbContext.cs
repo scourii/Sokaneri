@@ -10,18 +10,19 @@ namespace Sakuri.Areas.Identity.Data
             : base(options)
         {
         } 
-        public DbSet<Items> Items {get; set;}
+        public DbSet<Items> Item {get; set;}
         
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-                => optionsBuilder.UseNpgsql();
+                => optionsBuilder.UseNpgsql("SakuriConnection");
         
 
         protected override async void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             builder.Entity<Items>()
-                .HasOne(c => c.ApplicationUser)
-                .WithMany(t => t.Items);
+            .HasOne(p => p.ApplicationUser)
+            .WithMany(b => b.Items)
+            .HasForeignKey(p => p.UserForeignKey);
         }
         public override int SaveChanges()
         {

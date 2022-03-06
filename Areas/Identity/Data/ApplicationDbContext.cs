@@ -4,19 +4,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Sakuri.Areas.Identity.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-        }
+        } 
+        public DbSet<Items> Items {get; set;}
+        
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-                => optionsBuilder.UseNpgsql("Server=127.0.0.1;Port=5432;Database=sakuridb;User Id=scouri;Password=K3qingWaifu");
+                => optionsBuilder.UseNpgsql();
         
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override async void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Items>()
+                .HasOne(c => c.ApplicationUser)
+                .WithMany(t => t.Items);
         }
         public override int SaveChanges()
         {

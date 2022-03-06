@@ -16,7 +16,7 @@ namespace Sakuri
         public DbSet<Items> Items { get; set; }
     
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Server=127.0.0.1;Port=5432;Database=sakuridb;User Id=scouri;Password=K3qingWaifu");
+            => optionsBuilder.UseNpgsql("");
     
     }
     [Table("items", Schema = "public")]

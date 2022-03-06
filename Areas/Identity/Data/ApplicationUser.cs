@@ -12,5 +12,6 @@ namespace Sakuri.Areas.Identity.Data
         [PersonalData]
         [Column(TypeName = "bigint")]
         public long userid { get; set; }
+        public virtual ICollection<Items> Items {get; set;}
     }
 }

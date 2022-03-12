@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Sakuri.Models;
 
 namespace Sakuri.Areas.Identity.Data
 {
@@ -10,19 +11,23 @@ namespace Sakuri.Areas.Identity.Data
             : base(options)
         {
         } 
-        public DbSet<Items> Item {get; set;}
+        public DbSet<ApplicationUser> ApplicationUser { get; set;}
+        
+        public DbSet<Items> Items { get; set; }
         
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-                => optionsBuilder.UseNpgsql("SakuriConnection");
+                => optionsBuilder.UseNpgsql("SakuriDBConnection");
         
 
         protected override async void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<IdentityUser>()
+            .HasKey(c=> c.UserName);
             builder.Entity<Items>()
             .HasOne(p => p.ApplicationUser)
             .WithMany(b => b.Items)
-            .HasForeignKey(p => p.UserForeignKey);
+            .HasForeignKey(p => p.UserName);
         }
         public override int SaveChanges()
         {

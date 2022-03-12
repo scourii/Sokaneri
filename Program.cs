@@ -11,15 +11,16 @@ using Newtonsoft.Json.Serialization;
 using Blazored.Modal;
 using Blazored.Toast;
 using Sakuri.Services;
+using System.Security.Claims;
 using Sakuri.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
-
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 // Add services to the container.
-builder.Services.AddDbContext<SakuriContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("SakuriDBConnection"));
 });
@@ -38,6 +39,9 @@ builder.Services.AddBlazoredToast();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddAuthentication("Identity.Application").AddCookie();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<IdentityOptions>(options => options.ClaimsIdentity.UserIdClaimType = ClaimTypes.Name);
+builder.Services.Configure<IdentityOptions>(options => options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Name);
 builder.Services.AddTransient<AccountService>();
 builder.Services.AddSingleton<MoneyInformationService>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
@@ -45,7 +49,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
     options.User.RequireUniqueEmail = false;
     options.SignIn.RequireConfirmedAccount = false;
 
-}).AddDefaultTokenProviders().AddEntityFrameworkStores<SakuriContext>().AddDefaultUI();
+}).AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultUI();
 /* builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.SignIn.RequireConfirmedAccount = false )
     .AddEntityFrameworkStores<ApplicationDbContext>();

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sakuri.Data;
@@ -11,46 +11,33 @@ namespace Sakuri.Services
 {
     public class AccountService 
     {
-        protected SakuriContext _context;
-        public ApplicationUser User {get; private set;}
+        protected ApplicationDbContext _context;
+        public ApplicationUser ?User {get; private set;}
         
-        public AccountService(SakuriContext context)
+        public AccountService(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public List<Users> GetAllUsers()
+        public List<Items> GetAllItems(string userName)
         {
-            return _context.Users.ToList();
+            return _context.Items.Where(c => c.UserName == userName).ToList();
         }
-        public bool InsertInfo(Users user)
+
+        public bool InsertItem(Items items)
         {
-            _context.Users.Add(user);
+            var Item = new Items
+            {
+                ItemName = items.ItemName,
+                ItemCategory = items.ItemCategory,
+                ItemPrice = items.ItemPrice,
+                Time = items.Time,
+                UserName = items.UserName
+            };
+            _context.Items.Add(items);
             _context.SaveChanges();
             return true;
         }
-        public bool AddItem(Items item)
-        {
-            _context.Items.Add(item);
-            _context.SaveChanges();
-            return true;
-        }
-        
-        public bool DeleteInfo(ApplicationUser userDelete)
-        {
-            var deleteUser = _context.Users.FirstOrDefault(u=>u.userid == userDelete.userid);
-            if (deleteUser != null)
-            {
-                _context.Remove(deleteUser);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return false;
-            }
-            return true;
-        }   
+           
     }
 }
-
-

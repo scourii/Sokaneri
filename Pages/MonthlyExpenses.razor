@@ -1,12 +1,14 @@
 @page "/monthlyexpenses"
 @using Sakuri.Data
-@using Sakuri
+@using Sakuri.Areas.Identity.Data
 @using Sakuri.Services
-@inject IModalService modal  
+@using Sakuri.Models
+@inject IModalService modal 
+@inject ApplicationDbContext Context
 @inject MoneyInformationService MoneyService
 @inherits OwningComponentBase<AccountService>
 @inject NavigationManager NavigationManager
-
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
 
 <div class="top-row pl-0 navbar navbar-dark">
     <h1>Monthly Expenses</h1>
@@ -23,7 +25,7 @@
 
 <p><b>Expenses for this month:</b></p>
 
-@if (forecasts == null)
+@if (itemList == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -32,18 +34,20 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
+                <th>Name</th>
                 <th>Category</th>
+                <th>Date</th>
                 <th>Price</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var item in itemList)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.Summary</td>
-                    <td>$@forecast.Price</td>
+                    <td>@item.ItemName</td>
+                    <td>@item.ItemCategory</td>
+                    <td>@item.Time</td>
+                    <td>$@item.ItemPrice</td>
                 </tr>
             }
             
@@ -54,11 +58,9 @@ else
 }
 
 @code {
-    [CascadingParameter] public IModalService Modal { get; set; }
-    private MoneyInformation[] forecasts;
-    IList<Users> userList;
-    Users usrobj = new Users();
+    [CascadingParameter] public IModalService ?Modal { get; set; }
     int totalCost;
+    IList<Items> ?itemList;
     public void ShowModal()
     {
         var options = new ModalOptions()
@@ -67,21 +69,17 @@ else
             Animation = ModalAnimation.FadeInOut(.25)
         };
 
-        Modal.Show<AddProduct>("Products", options);
+        Modal?.Show<AddProduct>("Products", options);
     }
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await MoneyService.GetMoneyAsync(DateTime.Now);
-        userList = Service.GetAllUsers();
-        foreach (var price in forecasts)
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        itemList = Service.GetAllItems(user.Identity.Name);
+        foreach (var price in itemList)
         {
-            totalCost = totalCost + @price.Price;
+            totalCost = totalCost + @price.ItemPrice;
         }
-    }
-    void InsertInfo()
-    {
-        usrobj.userid = 0;
-        Service.InsertInfo(usrobj);
     }
 
 }

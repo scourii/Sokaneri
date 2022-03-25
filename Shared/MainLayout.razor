@@ -1,12 +1,26 @@
 @inherits LayoutComponentBase
 @using Blazored.Toast.Configuration
+@inject ViewOptionService ViewOption
+
 <div class="page @GetCssClass()">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebar ViewOption.Toggle()">
+                <NavMenu />
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <div class="top-row px-4 auth">
+                <a href="/" style="font-size: 25px">Sakuri</a>
+            </div>
+            <div class="sidebar @ViewOption.NavBarClass">
+                <NavMenu />
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
 
     <div class="main">
-        <div class="top-row px-4">
+        <div class="top-row px-4 auth">
             <LoginDisplay />
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
             <svg width="45px" height="80%" transform="scale(.6)" style="fill:var(--rose); margin-left:1rem;"xmlns="http://www.w3.org/2000/svg">
@@ -50,4 +64,8 @@
             selectedTheme = "Light";
         }
     }
+        protected override Task OnInitializedAsync()
+        {
+            return base.OnInitializedAsync();
+        }
 }

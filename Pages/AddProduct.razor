@@ -1,34 +1,35 @@
 @page "/AddProduct"
 @using Sakuri.Services
 @using Sakuri.Models
-@using Sakuri
+@using Sakuri.Areas.Identity.Data
+@using Microsoft.AspNetCore.Identity
 @inherits OwningComponentBase<AccountService>
 @inject NavigationManager NavigationManager
-
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
 
 <div class="simple-form">
     <EditForm Model="@model" OnValidSubmit=@AddItem>
     <div class="form-group">
         <label for="item-name">Item Name</label>
-        <InputText @bind-Value="model.itemname" type="text" class="form-control" />
-        <ValidationMessage For="@(() => model.itemname)" />
+        <InputText @bind-Value="model.ItemName" type="text" class="form-control" />
+        <ValidationMessage For="@(() => model.ItemName)" />
     </div>
 
     <div class="form-group">
         <label for="price">Item Price</label>      
-        <InputNumber @bind-Value="model.itemprice" type="int" class="form-control" />
-        <ValidationMessage For="@(() => model.itemprice)" />
+        <InputNumber @bind-Value="model.ItemPrice" type="int" class="form-control" />
+        <ValidationMessage For="@(() => model.ItemPrice)" />
     </div>
 
     <div class="form-group">
         <label for="category">Category</label>
-        <InputText @bind-Value="model.itemcategory" type="text" class="form-control" />
-        <ValidationMessage For="@(() => model.itemcategory)" />
+        <InputText @bind-Value="model.ItemCategory" type="text" class="form-control" />
+        <ValidationMessage For="@(() => model.ItemCategory)" />
     </div>
 
     <div class="form-group">
         <label for="date">Date</label>
-        <InputDate @bind-Value="model.itemdate" class="form-control" />
+        <InputDate @bind-Value="dateOnly"  class="form-control" />
         
     </div>
 
@@ -39,7 +40,13 @@
 
 @code {
     Items item = new Items();
-    private AddItem model = new AddItem();
+    private DateOnly dateOnly = DateOnly.FromDateTime(DateTime.Today);
+    private Items model = new Items();
+    protected async override Task OnInitializedAsync()
+    {
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+    }
 
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     void ShowModal()
@@ -49,12 +56,16 @@
             HideCloseButton = true
         };
     }
-    void AddItem()
+    private async Task AddItem()
     {
-        item.ItemName = model.itemname; 
-        item.ItemPrice = model.itemprice;
-        item.ItemCategory = model.itemcategory;
-        item.Time = model.itemdate;
-        Service.AddItem(item);
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        item.ItemName = model.ItemName;
+        item.ItemPrice = model.ItemPrice;
+        item.ItemCategory = model.ItemCategory;
+        item.Time = dateOnly;
+        item.UserName = user.Identity.Name;
+        Service.InsertItem(item);
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
 }

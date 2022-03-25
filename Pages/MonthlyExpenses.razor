@@ -3,23 +3,22 @@
 @using Sakuri.Areas.Identity.Data
 @using Sakuri.Services
 @using Sakuri.Models
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.Common
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
 @inject IModalService modal 
 @inject ApplicationDbContext Context
-@inject MoneyInformationService MoneyService
+@inject AccountService AccountService
 @inherits OwningComponentBase<AccountService>
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<ApplicationUser> UserManager
+
 
 <div class="top-row pl-0 navbar navbar-dark">
     <h1>Monthly Expenses</h1>
-     <div class="dropdown" style="margin-left:55%;margin-bottom:10px">  
-      <button class="btn-primary btn button-add" data-toggle="dropdown"> Filter</button>
-      <div class="dropdown-menu">
-          <a class="dropdown-item">Category</a>
-          <a class="dropdown-item">Price</a>
-          <a class="dropdown-item">Date</a>
-      </div>
- </div>
     <button @onclick="@ShowModal" class="btn-primary btn button-add" style="margin-bottom:10px">Add product</button>
 </div>
 
@@ -31,6 +30,11 @@
 }
 else
 {
+    <div class="form-group">
+        <input class="form-control" type="text" placeholder="Filter..."
+           @bind="Filter"
+           @bind:event="oninput">
+    </div>
     <table class="table">
         <thead>
             <tr>
@@ -43,24 +47,45 @@ else
         <tbody>
             @foreach (var item in itemList)
             {
+                if (!IsVisible(item.ItemName.ToString(), item.ItemCategory.ToString()))
+                continue;
                 <tr>
                     <td>@item.ItemName</td>
                     <td>@item.ItemCategory</td>
                     <td>@item.Time</td>
                     <td>$@item.ItemPrice</td>
                 </tr>
+                
             }
             
             <a class = "price" style="position:relative; left:168%; top: 35px;">Total Cost: <b>$@totalCost</b></a>
-            
         </tbody>
     </table>
+    <Chart Config="_config"></Chart>
 }
 
 @code {
-    [CascadingParameter] public IModalService ?Modal { get; set; }
+    private PieConfig _config;
+    [Key]
+    public String test;
+    private Chart _chart;
+    private AuthenticationState authstate;
+    [CascadingParameter] public IModalService Modal { get; set; }
     int totalCost;
-    IList<Items> ?itemList;
+    public string Filter { get; set; }
+    List<int> prices = new List<int>();
+    List<Items> itemList;
+    public bool IsVisible(string items, string category)
+    {
+        if (string.IsNullOrEmpty(Filter))
+            return true;
+    
+        if (items.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase) || category.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+    
+    
+        return false;
+    }
     public void ShowModal()
     {
         var options = new ModalOptions()
@@ -73,13 +98,47 @@ else
     }
     protected override async Task OnInitializedAsync()
     {
-        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        totalCost = 0;
+        authstate = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
         itemList = Service.GetAllItems(user.Identity.Name);
-        foreach (var price in itemList)
+        var items = itemList.GroupBy(item => item.ItemCategory).Select(group => (group.Key, group.Sum(item => item.ItemPrice)));
+        List<int> prices = new List<int>();
+        foreach (var price in items)
         {
-            totalCost = totalCost + @price.ItemPrice;
+            totalCost = totalCost + @price.Item2;
+            
+            prices.Add(price.Item2);
         }
-    }
+        _config = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                AspectRatio = 3,
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Monthly Expenses"
+                }
+            }
+        };
+        foreach (var item in items)
+        {
+            _config.Data.Labels.Add(item.Item1.ToString());
+        }
+
+        PieDataset<int> dataset = new PieDataset<int>(prices)
+        {
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+                ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+                ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+            }
+        };
+
+        _config.Data.Datasets.Add(dataset);
+        }
 
 }

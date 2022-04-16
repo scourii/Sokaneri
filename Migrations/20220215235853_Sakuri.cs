@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +10,6 @@ namespace Sakuri.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "public");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -31,9 +28,9 @@ namespace Sakuri.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    userid = table.Column<long>(type: "bigint", nullable: false),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Discriminator = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -50,36 +47,7 @@ namespace Sakuri.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "items",
-                schema: "public",
-                columns: table => new
-                {
-                    ItemName = table.Column<string>(type: "text", nullable: false),
-                    ItemPrice = table.Column<int>(type: "integer", nullable: false),
-                    Time = table.Column<DateOnly>(type: "date", nullable: false),
-                    ItemCategory = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_items", x => x.ItemName);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "users",
-                schema: "public",
-                columns: table => new
-                {
-                    userid = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    password = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_users", x => x.userid);
+                    table.PrimaryKey("PK_AspNetUsers", x => x.UserName);
                 });
 
             migrationBuilder.CreateTable(
@@ -109,7 +77,7 @@ namespace Sakuri.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(256)", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
@@ -120,7 +88,7 @@ namespace Sakuri.Migrations
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
+                        principalColumn: "UserName",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -131,7 +99,7 @@ namespace Sakuri.Migrations
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     ProviderKey = table.Column<string>(type: "text", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<string>(type: "character varying(256)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -140,7 +108,7 @@ namespace Sakuri.Migrations
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
+                        principalColumn: "UserName",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -148,7 +116,7 @@ namespace Sakuri.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(256)", nullable: false),
                     RoleId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -164,7 +132,7 @@ namespace Sakuri.Migrations
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
+                        principalColumn: "UserName",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -172,7 +140,7 @@ namespace Sakuri.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(256)", nullable: false),
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: true)
@@ -184,7 +152,28 @@ namespace Sakuri.Migrations
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
+                        principalColumn: "UserName",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Items",
+                columns: table => new
+                {
+                    ItemName = table.Column<string>(type: "text", nullable: false),
+                    ItemPrice = table.Column<int>(type: "integer", nullable: false),
+                    Time = table.Column<DateOnly>(type: "date", nullable: false),
+                    ItemCategory = table.Column<string>(type: "text", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(256)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Items", x => x.ItemName);
+                    table.ForeignKey(
+                        name: "FK_Items_AspNetUsers_UserName",
+                        column: x => x.UserName,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "UserName",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -224,6 +213,11 @@ namespace Sakuri.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Items_UserName",
+                table: "Items",
+                column: "UserName");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -244,12 +238,7 @@ namespace Sakuri.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "items",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "users",
-                schema: "public");
+                name: "Items");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

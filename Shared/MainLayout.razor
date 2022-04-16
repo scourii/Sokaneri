@@ -18,7 +18,6 @@
             </div>
         </NotAuthorized>
     </AuthorizeView>
-
     <div class="main">
         <div class="top-row px-4 auth">
             <LoginDisplay />
@@ -29,10 +28,12 @@
             </svg>
         </div>
 
-        <div class="content px-4">
-            @Body
+        <div class="content px-4 @GetCssClass()">
+            @Body 
         </div>
+        
     </div>
+    
 </div>
 
 <BlazoredToasts Position="ToastPosition.BottomRight"
@@ -64,8 +65,8 @@
             selectedTheme = "Light";
         }
     }
-        protected override Task OnInitializedAsync()
-        {
-            return base.OnInitializedAsync();
-        }
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
 }

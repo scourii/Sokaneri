@@ -1,3 +1,161 @@
 @page "/yearlyexpenses"
+@using Sakuri.UI
+@using Sakuri.Areas.Identity.Data
+@using Sakuri.Services
+@using Sakuri.Models
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.Common
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@inject IModalService modal 
+@inject ApplicationDbContext Context
+@inject AccountService AccountService
+@inherits OwningComponentBase<AccountService>
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
-<h1>Yearly Expenses</h1>
+<div class="top-row pl-0 navbar navbar-dark">
+    <h1>Yearly Expenses</h1>
+    <button @onclick="@ShowModal" class="btn-primary btn button-add" style="margin-bottom:10px">Add product</button>
+</div>
+
+<p><b>Expenses for the year:</b> <button @onclick="TriggerTable" class="btn-primary btn oi oi-pie-chart" style="margin-bottom:10px; transform: scale(.7, .7);"></button></p>
+
+    @if (itemList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        if (showTable == true)
+        {
+        <div class="form-group">
+            <input class="form-control" type="text" placeholder="Filter..."
+            @bind="Filter"
+            @bind:event="oninput">
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in itemList)
+                {
+                    if (!IsVisible(item.ItemName.ToString(), item.ItemCategory.ToString(), item.Time))
+                    continue;
+                    
+                    <tr>
+                        <td>@item.ItemName</td>
+                        <td>@item.ItemCategory</td>
+                        <td>@item.Time</td>
+                        <td>$@item.ItemPrice</td>
+                    </tr>
+                    
+                }
+            
+                <a class = "price" style="position:relative; left:168%; top: 35px;">Total Cost: <b>$@totalCost</b></a>
+            </tbody>
+        </table>
+        
+    }
+    <Chart Config="_config"></Chart>
+}
+
+@code {
+    private PieConfig _config;
+    [Key]
+    private AuthenticationState authstate;
+    private Chart _chart;
+    [CascadingParameter] public IModalService Modal { get; set; }
+    private int totalCost;
+    private string Filter { get; set; }
+    private bool showTable = true;
+    List<Items> itemList;
+    private bool IsVisible(string items, string category, DateOnly month)
+    {
+        if (string.IsNullOrEmpty(Filter))
+            return true;
+    
+        if (items.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase) || category.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase) || month.ToString().Contains(Filter))
+            return true;
+    
+    
+        return false;
+    }
+    public void ShowModal()
+    {
+        var options = new ModalOptions()
+        {
+            HideCloseButton = true,
+            Animation = ModalAnimation.FadeInOut(.25)
+        };
+
+        Modal?.Show<AddProduct>("Products", options);
+    }
+    private void TriggerTable()
+    {
+        if (showTable == false)
+        {
+            showTable = true;
+            StateHasChanged();
+        }
+        else
+        {
+            showTable = false;
+            StateHasChanged();
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        totalCost = 0;
+        IDataset<int> dataset;
+        int count = 0;
+        authstate = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        itemList = Service.GetYearlyItems(user.Identity.Name);
+        var items = itemList.GroupBy(item => item.ItemCategory).Select(group => (group.Key, group.Sum(item => item.ItemPrice)));
+        List<int> prices = new List<int>();
+        foreach (var price in items)
+        {
+            totalCost = totalCost + @price.Item2;
+            
+            prices.Add(price.Item2);
+        }
+        _config = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                AspectRatio = 3,
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "All Expenses",
+                },
+                
+                
+                
+            }
+        };
+        foreach (var item in items)
+        {
+            _config.Data.Labels.Add(item.Item1.ToString());
+            count++;
+        }
+        
+        dataset = new PieDataset<int>(prices)
+        {
+            
+            BackgroundColor = RandomColorGenerator.ChartColors.All.Take(count).Select(ColorUtil.FromDrawingColor).ToArray(),
+            BorderWidth = 1
+        };
+        _config.Data.Datasets.Add(dataset);    
+        }
+}

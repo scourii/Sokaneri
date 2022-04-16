@@ -6,6 +6,7 @@
 @inherits OwningComponentBase<AccountService>
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IToastService toastService
 
 <div class="simple-form">
     <EditForm Model="@model" OnValidSubmit=@AddItem>
@@ -33,19 +34,22 @@
         
     </div>
 
-    <button  @onclick="ModalInstance.CancelAsync" class="btn btn-primary">Submit</button>
+    <button @onclick="ModalInstance.CancelAsync" class="btn btn-primary">Submit</button>
     <button @onclick="ModalInstance.CancelAsync" class="btn btn-secondary">Cancel</button>
     </EditForm>
 </div>
 
 @code {
     Items item = new Items();
+    private ToastParameters _toastParameters;
     private DateOnly dateOnly = DateOnly.FromDateTime(DateTime.Today);
     private Items model = new Items();
     protected async override Task OnInitializedAsync()
     {
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
+        _toastParameters = new ToastParameters();
+        
     }
 
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
@@ -66,6 +70,9 @@
         item.Time = dateOnly;
         item.UserName = user.Identity.Name;
         Service.InsertItem(item);
-        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        StateHasChanged();
+        //NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        
+        toastService.ShowSuccess("Item Successfully Added");
     }
 }

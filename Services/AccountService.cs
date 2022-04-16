@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sakuri.Data;
 using Sakuri;
 using Sakuri.Models;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace Sakuri.Services
     public class AccountService 
     {
         protected ApplicationDbContext _context;
-        public ApplicationUser ?User {get; private set;}
+        private DateOnly CurrentDate = DateOnly.FromDateTime(DateTime.Today);
         
         public AccountService(ApplicationDbContext context)
         {
@@ -23,6 +22,15 @@ namespace Sakuri.Services
         {
             return _context.Items.Where(c => c.UserName == userName).ToList();
         }
+        public List<Items> GetYearlyItems(string userName)
+        {
+            return _context.Items.Where(c => c.UserName == userName).Where(c => c.Time.Year == CurrentDate.Year).ToList();
+        }
+        public List<Items> GetMonthlyItems(string userName)
+        {
+            return _context.Items.Where(c => c.UserName == userName).Where(c => c.Time.Month == CurrentDate.Month).ToList();
+        }
+
 
         public bool InsertItem(Items items)
         {

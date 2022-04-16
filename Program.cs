@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Sakuri.Areas.Identity;
-using Sakuri.Data;
+
 using Sakuri;
 using Newtonsoft.Json.Serialization;
 using Blazored.Modal;
+using Blazored.LocalStorage;
 using Blazored.Toast;
 using Sakuri.Services;
 using System.Security.Claims;
@@ -36,14 +37,15 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.
 builder.Services.AddControllers();
 builder.Services.AddBlazoredModal();
 builder.Services.AddBlazoredToast();
+builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddAuthentication("Identity.Application").AddCookie();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpContextAccessor();
-builder.Services.Configure<IdentityOptions>(options => options.ClaimsIdentity.UserIdClaimType = ClaimTypes.Name);
-builder.Services.Configure<IdentityOptions>(options => options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Name);
+//builder.Services.Configure<IdentityOptions>(options => options.ClaimsIdentity.UserIdClaimType = ClaimTypes.Name);
+//builder.Services.Configure<IdentityOptions>(options => options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Name);
 builder.Services.AddTransient<AccountService>();
-builder.Services.AddSingleton<MoneyInformationService>();
+builder.Services.AddSingleton<ViewOptionService>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
 
     options.User.RequireUniqueEmail = false;

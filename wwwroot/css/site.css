@@ -5,6 +5,9 @@ html, body {
     background-color: var(--background-1);
     
 }
+html.dark-mode, body.dark-mode, .dark-mode {
+    background-color: var(--background-1);
+}
 .bg-white {
     background-color: var(--background-2) !important;
     color: var(--rose) !important;
@@ -60,14 +63,29 @@ a.navbar-brand, a.text-dark, a.text-dark:hover {
 a, h4, .btn-link, .navbar-nav  {
     color: var(--rose);
 }
-
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    background-color: var(--rose);
+}
 .table
 {
     color:var(--text);
 }
+.hidden
+{
+    display: none;
+}
 .table thead th
 {
     border-bottom: 1px solid var(--background-2);
+    background-color: var(--background-2);
+}
+.thead-light
+{
+    background-color: var(--background-2);
+}
+.text-dark
+{
+    color: var(--error) !important;
 }
 .table td, .table th
 {
@@ -203,5 +221,6 @@ h1 {
         right: 0.75rem;
         top: 0.5rem;
     }
-
-
+    input[type=number] {
+        -moz-appearance: textfield;
+      }

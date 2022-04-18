@@ -12,7 +12,8 @@
     long GenerateAccountNumber()
     {
         var bytes = new byte[sizeof(Int64)];
-        RNGCryptoServiceProvider Gen = new RNGCryptoServiceProvider();
+        
+        RandomNumberGenerator Gen = RandomNumberGenerator.Create();
         Gen.GetBytes(bytes);
 
         long random = BitConverter.ToInt64(bytes, 0);
@@ -29,13 +30,13 @@
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <div class="form-group">
                 <label asp-for="Input.AccountID"></label>
-                <p><b>@AccountID</b>
+                <br><b>@AccountID</b>
                 <input asp-for="Input.AccountID" type="hidden" id="Input.AccountID" value=@AccountID />
                 <span asp-validation-for="Input.AccountID" class="text-danger"></span>
-                <button class="btn btn-primary" style="float:right;" onclick="@GenerateAccountNumber();">
+                <!--<button class="btn btn-primary" id="refreshr" type="reset" style="float:right;" onclick="@GenerateAccountNumber()">
                     Refresh
                 </button>
-                </p>
+                -->
                 
             </div>
         

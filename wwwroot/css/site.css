@@ -1,21 +1,4 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
-
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: var(--background-1);
-    
-}
-html.dark-mode, body.dark-mode, .dark-mode {
-    background-color: var(--background-1);
-}
-.bg-white {
-    background-color: var(--background-2) !important;
-    color: var(--rose) !important;
-}
-a.navbar-brand, a.text-dark, a.text-dark:hover {
-    color: var(--rose) !important;
-}
-
 .border-top {
     size: 100rem;
     border-top: 1px dashed var(--border) !important;
@@ -60,8 +43,37 @@ a.navbar-brand, a.text-dark, a.text-dark:hover {
     --name-bg: #2a2a2a;
 }
 
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: var(--background-1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+html.dark-mode, body.dark-mode, .dark-mode {
+    background-color: var(--background-1);
+    height: 100%;
+    width: 100%;
+}
+.bg-white {
+    background-color: var(--background-2) !important;
+    color: var(--rose) !important;
+}
+a.navbar-brand, a.text-dark, a.text-dark:hover {
+    color: var(--rose) !important;
+}
+
 a, h4, .btn-link, .navbar-nav  {
     color: var(--rose);
+}
+h1 {
+    padding-bottom: 1rem;
+}
+p {
+    font-size: larger;
+    padding-bottom: 1rem;
 }
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
     background-color: var(--rose);

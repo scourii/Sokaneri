@@ -4,21 +4,25 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
-using Sakuri.Areas.Identity;
-
-using Sakuri;
+using Sokaneri.Areas.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
+using Sokaneri;
+using Microsoft.Extensions.Configuration;
+using System.Net;
 using Newtonsoft.Json.Serialization;
 using Blazored.Modal;
 using Blazored.LocalStorage;
 using Blazored.Toast;
-using Sakuri.Services;
+using Sokaneri.Services;
 using System.Security.Claims;
-using Sakuri.Areas.Identity.Data;
+using Sokaneri.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ConfigurationManager Configuration = builder.Configuration;
 builder.Services.AddRazorPages();
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -56,12 +60,32 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
     options.SignIn.RequireConfirmedAccount = false )
     .AddEntityFrameworkStores<ApplicationDbContext>();
 */ 
+
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
 
-var app = builder.Build();
+var app = builder.Build(); 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    byte[] localhost = { 127, 0, 0, 1 };
+    IPAddress address = new IPAddress(localhost);
+    options.Listen(address, Int32.Parse(Configuration["Sokaneri:Https"]), listenOptions =>
+    {
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+            listenOptions.UseHttps(Configuration["SSL_Cert:Path"],
+                                    Configuration["SSL_Cert:Password"]);
+        else
+            listenOptions.UseHttps();
+    });
+});
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
+app.UseAuthentication();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+/*(if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 }
@@ -71,11 +95,10 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+*/
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

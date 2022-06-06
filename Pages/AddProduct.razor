@@ -1,0 +1,78 @@
+@page "/AddProduct"
+@using Sokaneri.Services
+@using Sokaneri.Models
+@using Sokaneri.Areas.Identity.Data
+@using Microsoft.AspNetCore.Identity
+@inherits OwningComponentBase<AccountService>
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IToastService toastService
+
+<div class="simple-form">
+    <EditForm Model="@model" OnValidSubmit=@AddItem>
+    <div class="form-group">
+        <label for="item-name">Item Name</label>
+        <InputText @bind-Value="model.ItemName" type="text" class="form-control" />
+        <ValidationMessage For="@(() => model.ItemName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="price">Item Price</label>      
+        <InputNumber @bind-Value="model.ItemPrice" type="int" class="form-control" />
+        <ValidationMessage For="@(() => model.ItemPrice)" />
+    </div>
+
+    <div class="form-group">
+        <label for="category">Category</label>
+        <InputText @bind-Value="model.ItemCategory" type="text" class="form-control" />
+        <ValidationMessage For="@(() => model.ItemCategory)" />
+    </div>
+
+    <div class="form-group">
+        <label for="date">Date</label>
+        <InputDate @bind-Value="dateOnly"  class="form-control" />
+        
+    </div>
+
+    <button @onclick="ModalInstance.CancelAsync" class="btn btn-primary">Submit</button>
+    <button @onclick="ModalInstance.CancelAsync" class="btn btn-secondary">Cancel</button>
+    </EditForm>
+</div>
+
+@code {
+    Items item = new Items();
+    private ToastParameters _toastParameters;
+    private DateOnly dateOnly = DateOnly.FromDateTime(DateTime.Today);
+    private Items model = new Items();
+    protected async override Task OnInitializedAsync()
+    {
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        _toastParameters = new ToastParameters();
+        
+    }
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    void ShowModal()
+    {
+        var options = new ModalOptions()
+        {
+            HideCloseButton = true
+        };
+    }
+    private async Task AddItem()
+    {
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        item.ItemName = model.ItemName;
+        item.ItemPrice = model.ItemPrice;
+        item.ItemCategory = model.ItemCategory;
+        item.Time = dateOnly;
+        item.UserName = user.Identity.Name;
+        Service.InsertItem(item);
+        StateHasChanged();
+        //NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        
+        toastService.ShowSuccess("Item Successfully Added");
+    }
+}

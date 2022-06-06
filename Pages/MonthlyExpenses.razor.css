@@ -1,0 +1,6 @@
+.price {
+    font-size: larger;
+    color: var(--rose);
+    border-bottom:var(--rose) 2px solid;
+    text-decoration: none;
+}

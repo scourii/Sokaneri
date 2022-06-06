@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sakuri;
-using Sakuri.Models;
+using Sokaneri;
+using Sokaneri.Models;
 using System.Linq;
 using System;
-using Sakuri.Areas.Identity.Data;
-namespace Sakuri.Services
+using Sokaneri.Areas.Identity.Data;
+namespace Sokaneri.Services
 {
     public class AccountService 
     {

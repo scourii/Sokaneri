@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Sakuri.Areas.Identity.Data;
+using Sokaneri.Areas.Identity.Data;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sakuri.Models
+namespace Sokaneri.Models
 {
     public class Items
         {

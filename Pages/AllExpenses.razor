@@ -1,8 +1,8 @@
 @page "/allexpenses"
-@using Sakuri.UI
-@using Sakuri.Areas.Identity.Data
-@using Sakuri.Services
-@using Sakuri.Models
+@using Sokaneri.UI
+@using Sokaneri.Areas.Identity.Data
+@using Sokaneri.Services
+@using Sokaneri.Models
 @using ChartJs.Blazor.PieChart
 @using ChartJs.Blazor.Util
 @using ChartJs.Blazor.Common
@@ -21,7 +21,7 @@
     <button @onclick="@ShowModal" class="btn-primary btn button-add" style="margin-bottom:10px">Add product</button>
 </div>
 
-<p><b>Total Expenses:</b></p>
+<p><b>Total Expenses:</b><button @onclick="TriggerTable" class="btn-primary btn oi oi-pie-chart" style="margin-bottom:10px; transform: scale(.7, .7);"></button></p>
 
 @if (itemList == null)
 {
@@ -29,11 +29,14 @@
 }
 else
 {
+    if (showTable == true)
+        {
     <div class="form-group">
         <input class="form-control" type="text" placeholder="Filter..."
            @bind="Filter"
            @bind:event="oninput">
     </div>
+    
     <table class="table">
         <thead>
             <tr>
@@ -55,16 +58,19 @@ else
                     <td>@item.Time</td>
                     <td>$@item.ItemPrice</td>
                 </tr>
+            }
                 
             }
             
             <a class = "price" style="position:relative; left:168%; top: 35px;">Total Cost: <b>$@totalCost</b></a>
         </tbody>
     </table>
+    }
     <Chart Config="_config"></Chart>
 }
 
 @code {
+    public bool showTable = true;
     private DateOnly Month = DateOnly.FromDateTime(DateTime.Today);
     private PieConfig _config;
     [Key]
@@ -86,6 +92,19 @@ else
     
     
         return false;
+    }
+    private void TriggerTable()
+    {
+        if (showTable == false)
+        {
+            showTable = true;
+            StateHasChanged();
+        }
+        else
+        {
+            showTable = false;
+            StateHasChanged();
+        }
     }
     public void ShowModal()
     {

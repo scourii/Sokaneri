@@ -23,12 +23,14 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigurationManager Configuration = builder.Configuration;
+builder.WebHost.UseWebRoot("wwwroot").UseStaticWebAssets();
 builder.Services.AddRazorPages();
+builder.WebHost.UseStaticWebAssets();
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("SakuriDBConnection"));
-});
+}); 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -64,6 +66,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ApplicationUser>>();
 
 var app = builder.Build(); 
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     byte[] localhost = { 127, 0, 0, 1 };
@@ -78,6 +81,7 @@ builder.WebHost.ConfigureKestrel(options =>
     });
 });
 
+app.UseStaticFiles();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
